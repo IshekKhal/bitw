@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: before-it-turns-white-api
+    runtime: python
+    region: oregon
+    plan: starter
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: TABPFN_TOKEN
+        sync: false
+      - key: PRIOR_LABS_API_KEY
+        sync: false
+      - key: DODO_PAYMENTS_API_KEY
+        sync: false
+      - key: DODO_PAYMENTS_WEBHOOK_SECRET
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+
+  - type: web
+    name: before-it-turns-white-ui
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: "npm --prefix client install && npm --prefix client run build"
+    staticPublishPath: "./client/dist"
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: "https://before-it-turns-white-api.onrender.com"
