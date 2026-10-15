@@ -33,7 +33,8 @@ import {
   Compass,
   FileText,
   History,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCw
 } from 'lucide-react';
 
 const DEFAULT_TANK_PROFILE = {
@@ -343,7 +344,7 @@ export default function App() {
         hardwareStatus={hardwareStatus}
       />
 
-      {/* Sub-Header Engine Status Ribbon */}
+      {/* Sub-Header Engine Status Ribbon with Real-Time Computing State */}
       <div className="engine-status-bar" id="engine-status-ribbon">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
           <Cpu size={14} color="#38bdf8" />
@@ -354,151 +355,190 @@ export default function App() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <span>MODEL CONFIDENCE: {((risk.confidence_score || 0.92) * 100).toFixed(0)}%</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            {isOnline ? (
-              <>
-                <span className="live-pulse-dot" />
-                <span style={{ color: '#10b981', fontWeight: 600 }}>TABPFN CLOUD LINK ACTIVE</span>
-              </>
-            ) : (
-              <>
-                <WifiOff size={13} color="#f59e0b" />
-                <span style={{ color: '#f59e0b', fontWeight: 600 }}>LOCAL GUARDRAILS (OFFLINE)</span>
-              </>
-            )}
-          </div>
+          {loading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#38bdf8' }}>
+              <RefreshCw size={12} className="animate-spin text-cyan" />
+              <span style={{ fontWeight: 600 }}>COMPUTING TRAJECTORY ON TABPFN...</span>
+            </div>
+          ) : (
+            <>
+              <span>MODEL CONFIDENCE: {((risk.confidence_score || 0.92) * 100).toFixed(0)}%</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                {isOnline ? (
+                  <>
+                    <span className="live-pulse-dot" />
+                    <span style={{ color: '#10b981', fontWeight: 600 }}>TABPFN CLOUD LINK ACTIVE</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff size={13} color="#f59e0b" />
+                    <span style={{ color: '#f59e0b', fontWeight: 600 }}>LOCAL GUARDRAILS (OFFLINE)</span>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Hero 48h Biological Threat Horizon (Architectural Mission Panel) */}
-      <div className={`hero-horizon-panel ${getRiskBorderClass()}`} id="hero-threat-horizon">
-        {/* Left Gauge Column */}
-        <div className="threat-gauge-col">
-          <div className="threat-meta-label">48H Threat Horizon</div>
-          <div className="threat-score-row">
-            <div
-              className="threat-score-number"
-              style={{
-                color:
-                  risk.risk_level === 'IMMINENT_COLLAPSE'
-                    ? 'var(--status-collapse)'
-                    : risk.risk_level === 'COUPLING_DRIFT'
-                    ? 'var(--status-drift)'
-                    : 'var(--status-stable)'
-              }}
-            >
-              {(risk.crash_probability_48h * 100).toFixed(0)}%
-            </div>
-            <div
-              className="threat-score-label"
-              style={{
-                color:
-                  risk.risk_level === 'IMMINENT_COLLAPSE'
-                    ? 'var(--status-collapse)'
-                    : risk.risk_level === 'COUPLING_DRIFT'
-                    ? 'var(--status-drift)'
-                    : 'var(--status-stable)'
-              }}
-            >
-              {risk.risk_level === 'IMMINENT_COLLAPSE'
-                ? 'High Risk'
-                : risk.risk_level === 'COUPLING_DRIFT'
-                ? 'Drift Alert'
-                : 'Optimal'}
+      {/* Hero 48h Biological Threat Horizon (Responsive & Immediate Feedback) */}
+      <div
+        className={`hero-horizon-panel ${loading ? 'computing' : getRiskBorderClass()}`}
+        id="hero-threat-horizon"
+      >
+        {loading ? (
+          <div className="computing-content">
+            <RefreshCw size={26} className="animate-spin text-cyan" style={{ flexShrink: 0 }} />
+            <div>
+              <div className="computing-title">Evaluating 48-Hour Chemical Trajectory...</div>
+              <div className="computing-sub">
+                Prior Labs TabPFN-3.5 foundation model is analyzing non-linear ion interactions and RTN crash boundaries.
+              </div>
             </div>
           </div>
-
-          <div className="threat-micro-bar">
-            <div
-              className="threat-micro-bar-fill"
-              style={{
-                width: `${Math.max(6, risk.crash_probability_48h * 100)}%`,
-                background:
-                  risk.risk_level === 'IMMINENT_COLLAPSE'
-                    ? 'var(--status-collapse)'
+        ) : (
+          <>
+            {/* Left Gauge Column */}
+            <div className="threat-gauge-col">
+              <div className="threat-meta-label">48-Hour Crash Risk</div>
+              <div className="threat-score-row">
+                <div
+                  className="threat-score-number"
+                  style={{
+                    color:
+                      risk.risk_level === 'IMMINENT_COLLAPSE'
+                        ? 'var(--status-collapse)'
+                        : risk.risk_level === 'COUPLING_DRIFT'
+                        ? 'var(--status-drift)'
+                        : 'var(--status-stable)'
+                  }}
+                >
+                  {(risk.crash_probability_48h * 100).toFixed(0)}%
+                </div>
+                <div
+                  className="threat-score-label"
+                  style={{
+                    color:
+                      risk.risk_level === 'IMMINENT_COLLAPSE'
+                        ? 'var(--status-collapse)'
+                        : risk.risk_level === 'COUPLING_DRIFT'
+                        ? 'var(--status-drift)'
+                        : 'var(--status-stable)'
+                  }}
+                >
+                  {risk.risk_level === 'IMMINENT_COLLAPSE'
+                    ? 'Critical Alert'
                     : risk.risk_level === 'COUPLING_DRIFT'
-                    ? 'var(--status-drift)'
-                    : 'var(--status-stable)'
-              }}
-            />
-          </div>
-        </div>
+                    ? 'Drift Alert'
+                    : 'Safe & Stable'}
+                </div>
+              </div>
 
-        {/* Middle Diagnosis Column */}
-        <div className="threat-diagnosis-col">
-          <div className="diagnosis-headline">
-            <span
-              className={`status-chip ${
-                risk.risk_level === 'IMMINENT_COLLAPSE'
-                  ? 'collapse'
-                  : risk.risk_level === 'COUPLING_DRIFT'
-                  ? 'drift'
-                  : 'stable'
-              }`}
-            >
-              {risk.risk_level.replace('_', ' ')}
-            </span>
-            <span>
-              {risk.risk_level === 'IMMINENT_COLLAPSE'
-                ? 'Catastrophic Chemical Collapse Predicted'
-                : risk.risk_level === 'COUPLING_DRIFT'
-                ? 'Elevated Ionic Coupling Drift Detected'
-                : 'System Equilibrium Stable & Balanced'}
-            </span>
-          </div>
-
-          <div className="diagnosis-driver-box">
-            <div className="driver-title-row">
-              <AlertTriangle size={13} color="#f59e0b" />
-              <span>Primary Vulnerability Driver &amp; Physical Mechanism</span>
+              <div className="threat-micro-bar">
+                <div
+                  className="threat-micro-bar-fill"
+                  style={{
+                    width: `${Math.max(6, risk.crash_probability_48h * 100)}%`,
+                    background:
+                      risk.risk_level === 'IMMINENT_COLLAPSE'
+                        ? 'var(--status-collapse)'
+                        : risk.risk_level === 'COUPLING_DRIFT'
+                        ? 'var(--status-drift)'
+                        : 'var(--status-stable)'
+                  }}
+                />
+              </div>
             </div>
-            <p className="driver-text">{risk.primary_driver}</p>
-            {risk.secondary_driver && (
-              <p className="driver-secondary">{risk.secondary_driver}</p>
-            )}
-          </div>
-        </div>
 
-        {/* Right Action Column */}
-        <div className="threat-action-col">
-          <button
-            className="btn-control"
-            onClick={() => setIsLogModalOpen(true)}
-            style={{ background: 'var(--bg-card)' }}
-          >
-            <span>+ Enter Test Reading</span>
-          </button>
-        </div>
+            {/* Middle Diagnosis Column (Plain English & Tactical Human Language) */}
+            <div className="threat-diagnosis-col">
+              <div className="diagnosis-headline">
+                <span
+                  className={`status-chip ${
+                    risk.risk_level === 'IMMINENT_COLLAPSE'
+                      ? 'collapse'
+                      : risk.risk_level === 'COUPLING_DRIFT'
+                      ? 'drift'
+                      : 'stable'
+                  }`}
+                >
+                  {risk.risk_level === 'IMMINENT_COLLAPSE'
+                    ? 'CRITICAL DANGER'
+                    : risk.risk_level === 'COUPLING_DRIFT'
+                    ? 'ELEVATED DRIFT'
+                    : 'ALL SAFE'}
+                </span>
+                <span>
+                  {risk.risk_level === 'IMMINENT_COLLAPSE'
+                    ? '48-Hour Chemical Crash Warning'
+                    : risk.risk_level === 'COUPLING_DRIFT'
+                    ? 'Chemical Imbalance Detected'
+                    : 'Reef Water Chemistry is Balanced & Stable'}
+                </span>
+              </div>
+
+              <div className="diagnosis-driver-box">
+                <div className="driver-title-row">
+                  <AlertTriangle size={13} color="#f59e0b" />
+                  <span>Primary Physical Factor &amp; Impact on Corals</span>
+                </div>
+                <p className="driver-text">{risk.primary_driver}</p>
+                {risk.secondary_driver && (
+                  <p className="driver-secondary">{risk.secondary_driver}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Right Action Column */}
+            <div className="threat-action-col">
+              {risk.risk_level !== 'STABLE' ? (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setActiveTab('dosing')}
+                  style={{ justifyContent: 'center', whiteSpace: 'nowrap' }}
+                >
+                  <span>View Dosing Plan</span>
+                </button>
+              ) : null}
+              <button
+                className="btn btn-secondary"
+                onClick={() => setIsLogModalOpen(true)}
+                style={{ justifyContent: 'center', whiteSpace: 'nowrap' }}
+              >
+                <span>+ Log New Test</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Progressive Disclosure Tab Rail (Architectural Segmented Control) */}
+      {/* Progressive Disclosure Tab Rail (Scroll-Free & Mobile 4-Column Responsive) */}
       <nav className="tab-rail" aria-label="Dashboard Views">
         <button
           className={`tab-pill ${activeTab === 'telemetry' ? 'active' : ''}`}
           onClick={() => setActiveTab('telemetry')}
         >
-          <span className="tab-index">01</span>
           <Sliders size={14} />
-          <span>Telemetry &amp; Drift Velocity</span>
+          <span className="tab-desktop-text">01 Water Chemistry</span>
+          <span className="tab-mobile-text">01 Chem</span>
         </button>
 
         <button
           className={`tab-pill ${activeTab === 'radar' ? 'active' : ''}`}
           onClick={() => setActiveTab('radar')}
         >
-          <span className="tab-index">02</span>
           <Compass size={14} />
-          <span>Bio-Radar &amp; Coupled Matrix</span>
+          <span className="tab-desktop-text">02 Bio-Radar &amp; Ratios</span>
+          <span className="tab-mobile-text">02 Radar</span>
         </button>
 
         <button
           className={`tab-pill ${activeTab === 'dosing' ? 'active' : ''}`}
           onClick={() => setActiveTab('dosing')}
         >
-          <span className="tab-index">03</span>
           <FileText size={14} />
-          <span>Safe Dosing Protocol</span>
+          <span className="tab-desktop-text">03 Safe Dosing Ramp</span>
+          <span className="tab-mobile-text">03 Dosing</span>
           {risk.risk_level !== 'STABLE' && <span className="tab-indicator-dot" />}
         </button>
 
@@ -506,20 +546,21 @@ export default function App() {
           className={`tab-pill ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
         >
-          <span className="tab-index">04</span>
           <History size={14} />
-          <span>Test History Ledger</span>
+          <span className="tab-desktop-text">04 Test Logs</span>
+          <span className="tab-mobile-text">04 Logs</span>
           <span className="tab-count">{history.length}</span>
         </button>
       </nav>
 
       {/* TAB 1: Telemetry & Trends */}
       {activeTab === 'telemetry' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <section style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <div className="telemetry-section-title">
-              <Activity size={15} />
-              <span>Eight Core Marine Parameters (Telemetry &amp; 24h Velocities)</span>
+              <Activity size={16} className="text-cyan" />
+              <span className="title-text">Water Chemistry Probes</span>
+              <span className="title-sub">Live values, 24-hour rate of change, and biological targets</span>
             </div>
             <TelemetryGrid
               current={currentTest}

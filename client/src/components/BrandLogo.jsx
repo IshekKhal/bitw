@@ -1,23 +1,28 @@
 import React from 'react';
 
 /**
- * BrandLogo — Precision Bio-Chemical Aragonite Aperture Mark
- * Designed according to tech-branding-logo & brandkit guidelines:
- * Geometry: Interlocking hexagonal aragonite prisms converging on an equilibrium core.
- * Typography: Architectural uppercase sans paired with a technical monospace descriptor.
+ * BrandLogo — Iconic Coral Shield & Aragonite Crystal Mark
+ * Represents the 48-hour threshold between vibrant living coral and bleached white calcium skeleton.
+ * Designed to scale cleanly across mobile viewports (down to 24px) up to high-density desktop displays.
  */
-export default function BrandLogo({ size = 36, showText = true, className = '' }) {
+export default function BrandLogo({ size = 32, showText = true, className = '' }) {
   return (
     <div
-      className={`brand-logo-container ${className}`}
-      style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', userSelect: 'none' }}
+      className={`brand-logo-lockup ${className}`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.625rem',
+        userSelect: 'none',
+        textDecoration: 'none'
+      }}
     >
-      {/* Precision Geometric SVG Symbol */}
+      {/* Precision Vector Emblem */}
       <div
+        className="brand-logo-mark"
         style={{
           width: `${size}px`,
           height: `${size}px`,
-          position: 'relative',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -27,121 +32,54 @@ export default function BrandLogo({ size = 36, showText = true, className = '' }
         <svg
           width={size}
           height={size}
-          viewBox="0 0 44 44"
+          viewBox="0 0 40 40"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ filter: 'drop-shadow(0 0 12px rgba(20, 184, 166, 0.25))' }}
+          aria-label="Before It Turns White Emblem"
         >
-          {/* Outer Aragonite Hexagonal Ring */}
-          <polygon
-            points="22,3 38,12 38,32 22,41 6,32 6,12"
-            stroke="rgba(255, 255, 255, 0.12)"
+          {/* Outer Protective Aragonite Shield Hexagon */}
+          <path
+            d="M20 2L35 10.5V29.5L20 38L5 29.5V10.5L20 2Z"
+            stroke="rgba(255, 255, 255, 0.16)"
             strokeWidth="1.5"
-            fill="#0b0f15"
+            fill="#090D14"
           />
 
-          {/* Calcite Equilibrium Lattice Planes */}
+          {/* Living Bio-Coral Branch (Teal to Sapphire Gradient) */}
           <path
-            d="M22 3 L22 41"
-            stroke="rgba(20, 184, 166, 0.2)"
-            strokeWidth="1"
-            strokeDasharray="2 3"
-          />
-          <path
-            d="M6 12 L38 32"
-            stroke="rgba(20, 184, 166, 0.2)"
-            strokeWidth="1"
-            strokeDasharray="2 3"
-          />
-          <path
-            d="M6 32 L38 12"
-            stroke="rgba(20, 184, 166, 0.2)"
-            strokeWidth="1"
-            strokeDasharray="2 3"
+            d="M20 7V20M20 20L13 14M20 20L27 14M20 20V31M15 25L20 31L25 25"
+            stroke="url(#coralGrad)"
+            strokeWidth="2.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
 
-          {/* Primary Coral Symbiont Prisms (Cyan & Emerald Gradient) */}
-          <polygon
-            points="22,10 32,16 22,22 12,16"
-            fill="url(#brandGrad1)"
-            opacity="0.85"
-          />
-          <polygon
-            points="12,16 22,22 22,34 12,28"
-            fill="url(#brandGrad2)"
-            opacity="0.95"
-          />
-          <polygon
-            points="32,16 32,28 22,34 22,22"
-            fill="url(#brandGrad3)"
-            opacity="0.75"
-          />
+          {/* Living Polyp Nucleus Dots */}
+          <circle cx="20" cy="7" r="2" fill="#2dd4bf" />
+          <circle cx="13" cy="14" r="1.75" fill="#38bdf8" />
+          <circle cx="27" cy="14" r="1.75" fill="#38bdf8" />
+          <circle cx="20" cy="20" r="2.5" fill="#ffffff" />
+          <circle cx="20" cy="31" r="1.75" fill="#0ea5e9" />
 
-          {/* Central Equilibrium Nucleus */}
-          <circle cx="22" cy="22" r="2.5" fill="#ffffff" />
-          <circle cx="22" cy="22" r="5" stroke="#2dd4bf" strokeWidth="1" opacity="0.6" />
-
-          {/* Definitions */}
+          {/* Gradient Definitions */}
           <defs>
-            <linearGradient id="brandGrad1" x1="12" y1="10" x2="32" y2="22" gradientUnits="userSpaceOnUse">
+            <linearGradient id="coralGrad" x1="13" y1="7" x2="27" y2="31" gradientUnits="userSpaceOnUse">
               <stop stopColor="#2dd4bf" />
+              <stop offset="0.5" stopColor="#38bdf8" />
               <stop offset="1" stopColor="#0ea5e9" />
-            </linearGradient>
-            <linearGradient id="brandGrad2" x1="12" y1="16" x2="22" y2="34" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#0f766e" />
-              <stop offset="1" stopColor="#0284c7" />
-            </linearGradient>
-            <linearGradient id="brandGrad3" x1="32" y1="16" x2="22" y2="34" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#14b8a6" />
-              <stop offset="1" stopColor="#0369a1" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
-      {/* Editorial Tech Brand Wordmark */}
+      {/* Brand Wordmark & Descriptor */}
       {showText && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span
-              style={{
-                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                fontSize: '0.9375rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                color: '#f8fafc',
-                textTransform: 'uppercase'
-              }}
-            >
-              Before It Turns White
-            </span>
-            <span
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: '0.625rem',
-                fontWeight: 600,
-                color: '#2dd4bf',
-                background: 'rgba(45, 212, 191, 0.1)',
-                border: '1px solid rgba(45, 212, 191, 0.25)',
-                padding: '0.1rem 0.35rem',
-                borderRadius: '4px',
-                letterSpacing: '0.06em'
-              }}
-            >
-              48H BIO-GUARD
-            </span>
+        <div className="brand-text-block">
+          <div className="brand-title-row">
+            <span className="brand-name">BEFORE IT TURNS WHITE</span>
+            <span className="brand-tag">48H GUARD</span>
           </div>
-          <div
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: '0.6875rem',
-              color: '#64748b',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase'
-            }}
-          >
-            Predictive Coral Reef Water Chemistry System
-          </div>
+          <span className="brand-subtitle">Predictive Reef Chemistry</span>
         </div>
       )}
     </div>

@@ -21,69 +21,69 @@ def evaluate_deterministic_guardrails(
         risk = 0.88 if indicators.mg_ca_ratio < 2.70 else 0.79
         critical_drivers.append((
             risk,
-            f"Magnesium Shield Collapse: Mg:Ca ratio {indicators.mg_ca_ratio:.2f} (baseline ~3.20) induces abiotic calcium carbonate crystal nucleation."
+            f"Magnesium Shield Depleted: Magnesium ratio is {indicators.mg_ca_ratio:.2f} (safe is ~3.20). Calcium and buffer will bind together and precipitate out of solution like snow, starving corals of building blocks."
         ))
 
     # 2. Alkalinity velocity shock
     if abs(indicators.alk_velocity_24h) >= 0.80:
-        direction = "drop" if indicators.alk_velocity_24h < 0 else "spike"
+        direction = "dropped" if indicators.alk_velocity_24h < 0 else "jumped"
         critical_drivers.append((
             0.92,
-            f"Alkalinity Shock: 24h drift of {indicators.alk_velocity_24h:+.2f} dKH triggers osmotic cell rupture and Rapid Tissue Necrosis (RTN)."
+            f"Alkalinity Shock: Alkalinity {direction} {indicators.alk_velocity_24h:+.2f} dKH in 24h. Corals cannot adapt to sudden swings—tissue will peel off (RTN) within 48 hours unless stabilized."
         ))
     elif abs(indicators.alk_velocity_24h) >= 0.45:
         critical_drivers.append((
             0.55,
-            f"Elevated Alkalinity Velocity: {indicators.alk_velocity_24h:+.2f} dKH/24h exceeds biological buffer tolerance (+0.5 dKH clamp)."
+            f"Alkalinity Drifting Too Fast: Changing at {indicators.alk_velocity_24h:+.2f} dKH/day. Safe daily limit is ±0.5 dKH to avoid coral stress."
         ))
 
     # 3. Absolute alkalinity limits
     if current.alkalinity_dkh < 6.5:
         critical_drivers.append((
             0.85,
-            f"Severe Alkalinity Depletion: {current.alkalinity_dkh:.1f} dKH starves coral proton pumps, halting aragonite crystallization."
+            f"Severe Alkalinity Depletion: Carbonate buffer dropped to {current.alkalinity_dkh:.1f} dKH. Corals have stopped building skeleton and tissue will recede from the base."
         ))
     elif current.alkalinity_dkh > 11.5:
         critical_drivers.append((
             0.75,
-            f"Hyper-Carbonate Stress: {current.alkalinity_dkh:.1f} dKH risks chemical precipitation and base recession."
+            f"Alkalinity Dangerously High: Buffer reached {current.alkalinity_dkh:.1f} dKH. High alkalinity with intense lighting burns tips and causes chemical precipitation."
         ))
 
     # 4. Nutrient starvation vs elevated alkalinity
     if indicators.nutrient_starvation_flag == 1 or (current.phosphate_ppm < 0.01 and current.alkalinity_dkh > 8.5):
         critical_drivers.append((
             0.68,
-            f"Nutrient Bottom-Out: Zero phosphate ({current.phosphate_ppm:.3f} ppm) at {current.alkalinity_dkh:.1f} dKH induces burnt tip oxidative necrosis."
+            f"Phosphate Starvation & Burnt Tips: Phosphate dropped to zero ({current.phosphate_ppm:.3f} ppm) while alkalinity is high ({current.alkalinity_dkh:.1f} dKH). Corals starve under lights and burn tips within 48h."
         ))
 
     # 5. Temperature and salinity extremes
     if current.temperature_c > 28.5:
         critical_drivers.append((
             0.82,
-            f"Thermal Stress: Temperature {current.temperature_c:.1f} °C initiates symbiotic zooxanthellae photo-inhibition and coral bleaching."
+            f"Water Too Warm ({current.temperature_c:.1f} °C / {(current.temperature_c * 9/5 + 32):.1f} °F): Corals will expel their symbiotic algae and turn white (bleach) if heat persists."
         ))
     elif current.temperature_c < 22.0:
         critical_drivers.append((
             0.70,
-            f"Hypothermic Shock: Water temperature {current.temperature_c:.1f} °C shuts down enzyme and calcification kinetics."
+            f"Water Too Cold ({current.temperature_c:.1f} °C): Low temperatures shut down coral metabolism and growth."
         ))
 
     if current.salinity_sg < 1.022:
         critical_drivers.append((
             0.78,
-            f"Hypo-Salinity Stress: Specific gravity {current.salinity_sg:.4f} causes extreme cellular osmotic swelling."
+            f"Salinity Too Low ({current.salinity_sg:.4f} SG): Water is too fresh, causing osmotic pressure that swells and bursts coral cells."
         ))
     elif current.salinity_sg > 1.028:
         critical_drivers.append((
             0.72,
-            f"Hyper-Salinity Stress: Specific gravity {current.salinity_sg:.4f} dehydrates coral polyp tissues."
+            f"Salinity Too High ({current.salinity_sg:.4f} SG): Salt level is dehydrating coral tissue."
         ))
 
     # 6. Aragonite dissolution check
     if indicators.aragonite_saturation_proxy < 0.65 or current.ph < 7.80:
         critical_drivers.append((
             0.80,
-            f"Aragonite Skeletal Dissolution: Low pH ({current.ph:.2f}) actively dissolves existing coral calcium carbonate skeletons."
+            f"Acidic Water Dissolving Skeletons: Low pH ({current.ph:.2f}) makes water corrosive, actively dissolving coral calcium skeletons."
         ))
 
     if critical_drivers:

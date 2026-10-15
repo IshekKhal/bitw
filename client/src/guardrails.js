@@ -79,33 +79,34 @@ export function evaluateClientGuardrails(current, history = [], tankProfile = {}
   // Deterministic checks
   let crashProb = 0.06;
   let riskLevel = 'STABLE';
-  let primaryDriver = 'All parameters within normal biological equilibrium bounds';
+  let primaryDriver = 'All 8 Parameters in Safe Range: Reef chemistry is balanced and stable. No rapid chemical shifts detected.';
   let secondaryDriver = null;
 
   if (mgCaRatio < 2.85 || (current.magnesium_ppm < 1200 && current.alkalinity_dkh > 8.0)) {
     crashProb = mgCaRatio < 2.70 ? 0.88 : 0.79;
     riskLevel = 'IMMINENT_COLLAPSE';
-    primaryDriver = `Magnesium Shield Collapse: Mg:Ca ratio ${mgCaRatio} (baseline ~3.20) induces abiotic calcite precipitation.`;
+    primaryDriver = `Magnesium Shield Depleted: Ratio is ${mgCaRatio} (target is ~3.20). Calcium and alkalinity will bind and precipitate out like snow, starving corals.`;
   } else if (Math.abs(alkVelocity) >= 0.80) {
     crashProb = 0.92;
     riskLevel = 'IMMINENT_COLLAPSE';
-    primaryDriver = `Alkalinity Shock: 24h drift of ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH triggers osmotic cell rupture and Rapid Tissue Necrosis (RTN).`;
+    const direction = alkVelocity < 0 ? 'dropped' : 'jumped';
+    primaryDriver = `Alkalinity Shock: Alkalinity ${direction} ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH in 24h. Corals cannot adapt to sudden swings—tissue will peel off (RTN) within 48h unless stabilized.`;
   } else if (current.alkalinity_dkh < 6.5) {
     crashProb = 0.85;
     riskLevel = 'IMMINENT_COLLAPSE';
-    primaryDriver = `Severe Alkalinity Depletion: ${current.alkalinity_dkh} dKH starves coral proton pumps, halting calcification.`;
+    primaryDriver = `Severe Alkalinity Depletion: Buffer dropped to ${current.alkalinity_dkh} dKH. Corals cannot build skeleton and tissue will recede from base.`;
   } else if (isStarved) {
     crashProb = 0.68;
     riskLevel = 'COUPLING_DRIFT';
-    primaryDriver = `Nutrient Bottom-Out: Zero phosphate (${current.phosphate_ppm} ppm) at ${current.alkalinity_dkh} dKH causes burnt tip necrosis.`;
+    primaryDriver = `Phosphate Starvation & Burnt Tips: Zero phosphate (${current.phosphate_ppm} ppm) at ${current.alkalinity_dkh} dKH. Corals starve under intense lights and burn tips within 48h.`;
   } else if (mgCaRatio < 3.05) {
     crashProb = 0.32;
     riskLevel = 'COUPLING_DRIFT';
-    primaryDriver = `Mild Magnesium Drift: Ratio ${mgCaRatio} is approaching critical precipitation threshold (2.85).`;
+    primaryDriver = `Mild Magnesium Drift: Ratio ${mgCaRatio} is drifting near the 2.85 precipitation boundary.`;
   } else if (Math.abs(alkVelocity) >= 0.30) {
     crashProb = 0.25;
     riskLevel = 'COUPLING_DRIFT';
-    primaryDriver = `Moderate Alkalinity Drift: ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH/24h.`;
+    primaryDriver = `Moderate Alkalinity Drift: ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH/24h. Safe daily limit is ±0.5 dKH.`;
   }
 
   // Generate remediation plan
