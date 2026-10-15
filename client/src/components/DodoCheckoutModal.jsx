@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Sparkles, Check, ExternalLink, ShieldCheck } from 'lucide-react';
+import { API_BASE } from '../apiConfig';
 
 export default function DodoCheckoutModal({ isOpen, onClose, onProActivated, userEmail = 'guest@reef.org' }) {
   if (!isOpen) return null;
@@ -14,7 +15,7 @@ export default function DodoCheckoutModal({ isOpen, onClose, onProActivated, use
     setLoading(true);
 
     try {
-      const res = await fetch('/api/billing/create-checkout-session', {
+      const res = await fetch(`${API_BASE}/api/billing/create-checkout-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

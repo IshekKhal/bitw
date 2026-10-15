@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from datetime import datetime, timedelta, timezone
 import logging
 from typing import Any, Dict, List
@@ -9,6 +13,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.billing.dodo_service import billing_service
 from backend.engine.dosing_clamp import generate_remediation_plan
 from backend.engine.features import build_feature_vector
+from backend.engine.hardware_controller import (
+    HardwareControllerConfig,
+    HardwareSyncResult,
+    map_probes_to_raw_entry,
+    poll_hardware_controller
+)
 from backend.engine.normalizer import normalize_raw_entry
 from backend.engine.tabpfn_agent import agent_instance
 from backend.models import (
@@ -54,6 +64,32 @@ def health_check() -> Dict[str, Any]:
 @app.post("/api/normalize", response_model=TestEntry)
 def normalize_endpoint(raw_entry: RawInputEntry) -> TestEntry:
     return normalize_raw_entry(raw_entry)
+
+
+@app.post("/api/hardware/poll", response_model=HardwareSyncResult)
+async def hardware_poll_endpoint(config: HardwareControllerConfig) -> HardwareSyncResult:
+    """
+    Polls a physical marine aquarium controller (Neptune Apex, GHL Profilux, Hydros) on local LAN or REST.
+    Returns detected probes and normalized marine telemetry.
+    """
+    return await poll_hardware_controller(config)
+
+
+@app.post("/api/hardware/ingest", response_model=TestEntry)
+def hardware_ingest_endpoint(payload: Dict[str, Any]) -> TestEntry:
+    """
+    Webhook ingest endpoint for Neptune Apex, reef-pi, Home Assistant, or automated dosers pushing JSON.
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+    probes: Dict[str, float] = {}
+    for k, v in payload.items():
+        try:
+            probes[str(k)] = float(v)
+        except (ValueError, TypeError):
+            pass
+    raw = map_probes_to_raw_entry(probes, now_iso)
+    return normalize_raw_entry(raw)
+
 
 
 @app.post("/api/predict", response_model=PredictionResponse)
