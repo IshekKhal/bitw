@@ -149,8 +149,15 @@ export default function Header({
           aria-label="Hardware Link"
         >
           <Cpu size={14} className={hardwareStatus === 'synced' ? 'text-emerald' : 'text-cyan'} />
-          <span className="pill-text-desktop">
-            {hardwareStatus === 'synced' ? 'Apex Live' : 'Hardware'}
+          <span className="header-pill-label">
+            {hardwareStatus === 'synced' ? (
+              'Apex Live'
+            ) : (
+              <>
+                <span className="hide-mobile">Hardware</span>
+                <span className="show-mobile-only">Apex</span>
+              </>
+            )}
           </span>
           <span className="live-status-dot" />
         </button>
@@ -163,7 +170,7 @@ export default function Header({
           title="Guardian Pro TabPFN Foundation Access"
         >
           <Shield size={13} className={isPro ? 'text-emerald' : 'text-muted'} />
-          <span className="pill-text-desktop">{isPro ? 'Pro' : '$4.99'}</span>
+          <span className="header-pill-label">{isPro ? 'Pro' : '$4.99'}</span>
         </button>
 
         {/* Sole Primary Action on Viewport: Log Water Test */}
@@ -173,8 +180,11 @@ export default function Header({
           onClick={onOpenLogModal}
           title="Log manual test kit measurements (Salifert, Hanna, Red Sea)"
         >
-          <PlusCircle size={15} />
-          <span className="btn-action-label">+ Log Test</span>
+          <PlusCircle size={14} />
+          <span className="btn-action-label">
+            <span className="hide-mobile">Log Test</span>
+            <span className="show-mobile-only">Log</span>
+          </span>
         </button>
       </div>
     </header>

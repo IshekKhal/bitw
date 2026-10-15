@@ -45,7 +45,7 @@ export default function DodoCheckoutModal({ isOpen, onClose, onProActivated, use
       <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
         <div className="modal-header">
           <div className="modal-title">
-            <Sparkles size={20} color="#818cf8" />
+            <Sparkles size={20} color="#38bdf8" />
             <span>Upgrade to Guardian Pro</span>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close Modal">
@@ -56,10 +56,10 @@ export default function DodoCheckoutModal({ isOpen, onClose, onProActivated, use
         {!checkoutUrl ? (
           <form onSubmit={handleCheckout} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
-              <div style={{ fontSize: '2.25rem', fontWeight: 800, fontFamily: 'JetBrains Mono', color: '#f8fafc' }}>
+              <div style={{ fontSize: '2.25rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: '#f8fafc' }}>
                 {billingCycle === 'monthly' ? '$4.99' : '$39.00'}
                 <span style={{ fontSize: '0.9rem', color: '#94a3b8', fontWeight: 500 }}>
-                  {billingCycle === 'monthly' ? ' / month' : ' / year (35% off)'}
+                  {billingCycle === 'monthly' ? ' / month' : ' / year (Save 35%)'}
                 </span>
               </div>
               <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginTop: '0.25rem' }}>
@@ -68,19 +68,39 @@ export default function DodoCheckoutModal({ isOpen, onClose, onProActivated, use
             </div>
 
             {/* Cycle Selector */}
-            <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--bg-surface-elevated)', padding: '0.25rem', borderRadius: '6px' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--bg-surface)', padding: '0.25rem', borderRadius: '6px', border: '1px solid var(--border-hairline)' }}>
               <button
                 type="button"
-                className={`btn ${billingCycle === 'monthly' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, justifyContent: 'center' }}
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  background: billingCycle === 'monthly' ? 'rgba(56, 189, 248, 0.15)' : 'transparent',
+                  color: billingCycle === 'monthly' ? '#38bdf8' : 'var(--text-muted)',
+                  border: billingCycle === 'monthly' ? '1px solid #38bdf8' : '1px solid transparent',
+                  padding: '0.45rem',
+                  borderRadius: '5px',
+                  fontWeight: 600,
+                  fontSize: '0.8125rem',
+                  cursor: 'pointer'
+                }}
                 onClick={() => setBillingCycle('monthly')}
               >
                 Monthly ($4.99/mo)
               </button>
               <button
                 type="button"
-                className={`btn ${billingCycle === 'yearly' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, justifyContent: 'center' }}
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  background: billingCycle === 'yearly' ? 'rgba(56, 189, 248, 0.15)' : 'transparent',
+                  color: billingCycle === 'yearly' ? '#38bdf8' : 'var(--text-muted)',
+                  border: billingCycle === 'yearly' ? '1px solid #38bdf8' : '1px solid transparent',
+                  padding: '0.45rem',
+                  borderRadius: '5px',
+                  fontWeight: 600,
+                  fontSize: '0.8125rem',
+                  cursor: 'pointer'
+                }}
                 onClick={() => setBillingCycle('yearly')}
               >
                 Annual ($39/yr)

@@ -47,22 +47,34 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
 
   return (
     <div className="modal-overlay" id="log-test-modal" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '560px' }}>
         <div className="modal-header">
           <div className="modal-title">
-            <FlaskConical size={20} color="#38bdf8" />
-            <span>Log Test Kit Measurements</span>
+            <FlaskConical size={18} className="text-cyan" />
+            <span>Log Water Test Measurements</span>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close Modal">
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div className="form-grid">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '0.75rem',
+              maxHeight: '65vh',
+              overflowY: 'auto',
+              paddingRight: '0.25rem'
+            }}
+          >
             {/* Salinity */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-salinity">Salinity</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-salinity">Salinity</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 1.025</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-salinity"
@@ -82,14 +94,19 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
                   <option value="ppt">ppt</option>
                 </select>
               </div>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'JetBrains Mono' }}>
-                Normalized: {normSG} SG
-              </span>
+              {salinityUnit !== 'sg' && (
+                <span style={{ fontSize: '0.6875rem', color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
+                  ≈ {normSG} SG
+                </span>
+              )}
             </div>
 
             {/* Alkalinity */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-alkalinity">Alkalinity</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-alkalinity">Alkalinity</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 8.4 dKH</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-alkalinity"
@@ -110,14 +127,19 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
                   <option value="ppm">ppm</option>
                 </select>
               </div>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'JetBrains Mono' }}>
-                Normalized: {normAlk} dKH
-              </span>
+              {alkUnit !== 'dkh' && (
+                <span style={{ fontSize: '0.6875rem', color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
+                  ≈ {normAlk} dKH
+                </span>
+              )}
             </div>
 
             {/* Calcium */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-calcium">Calcium (ppm)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-calcium">Calcium (ppm)</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 420</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-calcium"
@@ -133,7 +155,10 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
 
             {/* Magnesium */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-magnesium">Magnesium (ppm)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-magnesium">Magnesium (ppm)</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 1350</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-magnesium"
@@ -149,7 +174,10 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
 
             {/* Nitrate */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-nitrate">Nitrate NO3 (ppm)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-nitrate">Nitrate NO3 (ppm)</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 2–10</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-nitrate"
@@ -165,7 +193,10 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
 
             {/* Phosphate */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-phosphate">Phosphate PO4 (ppm)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-phosphate">Phosphate PO4 (ppm)</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 0.04</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-phosphate"
@@ -181,7 +212,10 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
 
             {/* Temperature */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-temperature">Temperature</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-temperature">Temperature</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 25.0°C</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-temperature"
@@ -201,14 +235,19 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
                   <option value="f">°F</option>
                 </select>
               </div>
-              <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'JetBrains Mono' }}>
-                Normalized: {normTemp} °C
-              </span>
+              {tempUnit !== 'c' && (
+                <span style={{ fontSize: '0.6875rem', color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
+                  ≈ {normTemp} °C
+                </span>
+              )}
             </div>
 
             {/* pH */}
             <div className="form-group">
-              <label className="form-label" htmlFor="input-ph">pH Scale</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" htmlFor="input-ph">pH Scale</label>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>Safe: 8.2</span>
+              </div>
               <div className="input-with-unit">
                 <input
                   id="input-ph"
@@ -223,13 +262,13 @@ export default function LogTestModal({ isOpen, onClose, onSubmitTest, initialVal
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.25rem', borderTop: '1px solid var(--border-hairline)', paddingTop: '0.75rem' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel
             </button>
             <button type="submit" id="btn-submit-test" className="btn btn-primary">
-              <Check size={16} />
-              <span>Evaluate Crash Risk</span>
+              <Check size={15} />
+              <span>Evaluate Trajectory</span>
             </button>
           </div>
         </form>

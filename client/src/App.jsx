@@ -535,7 +535,7 @@ export default function App() {
         >
           <FileText size={14} />
           <span className="tab-desktop-text">03 Safe Dosing Ramp</span>
-          <span className="tab-mobile-text">03 Dosing</span>
+          <span className="tab-mobile-text">03 Dose</span>
           {risk.risk_level !== 'STABLE' && <span className="tab-indicator-dot" />}
         </button>
 
@@ -658,16 +658,25 @@ export default function App() {
               <div className="coupled-item">
                 <div>
                   <div className="coupled-label-row">
-                    <span className="coupled-label">Net Water Volume</span>
+                    <span className="coupled-label">Calcium : Buffer Balance (Ca : Alk)</span>
                     <Tooltip
-                      title="Net System Water Volume"
-                      text="Actual water volume excluding live rock and sand displacement."
-                      why="All milliliter liquid chemical dosages are calculated stoichiometrically against this volume."
+                      title="Calcium to Alkalinity Coupling"
+                      text="Ratio of dissolved calcium (ppm) to carbonate buffer (dKH). Baseline is ~50.0 ppm per 1 dKH."
+                      why="Calcification consumes calcium and carbonate in a strict 20:1 meq/L (50:1 ppm/dKH) ratio. Imbalance causes spontaneous calcium carbonate precipitation."
                     />
                   </div>
-                  <div style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Stoichiometric Basis</div>
+                  <div style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                    {(() => {
+                      const ratio = currentReading.alkalinity_dkh > 0 ? (currentReading.calcium_ppm / currentReading.alkalinity_dkh) : 50;
+                      if (ratio < 42) return 'Carbonate Excess Skew';
+                      if (ratio > 58) return 'Alkalinity Depleted Skew';
+                      return 'Stoichiometric Homeostasis';
+                    })()}
+                  </div>
                 </div>
-                <span className="coupled-value">{tankProfile.net_volume_liters} L</span>
+                <span className="coupled-value">
+                  {(currentReading.alkalinity_dkh > 0 ? (currentReading.calcium_ppm / currentReading.alkalinity_dkh).toFixed(1) : '50.0')} : 1
+                </span>
               </div>
             </div>
           </div>
