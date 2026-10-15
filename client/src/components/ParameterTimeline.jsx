@@ -8,18 +8,18 @@ export default function ParameterTimeline({ current, history = [] }) {
 
   const width = 800;
   const height = 180;
-  const padding = { top: 20, right: 30, bottom: 30, left: 45 };
+  const padding = { top: 24, right: 30, bottom: 32, left: 45 };
 
   if (allPoints.length < 2) {
     return (
-      <div className="card" style={{ padding: '1.25rem' }}>
-        <div className="card-header">
-          <span className="card-title">SYNCHRONIZED CHEMICAL DRIFT TIMELINE</span>
-          <span style={{ fontSize: '0.75rem', color: '#64748b', fontFamily: 'JetBrains Mono' }}>
-            Requires at least 2 historical logs
+      <div className="timeline-card">
+        <div className="timeline-header">
+          <span className="timeline-title">Synchronized Chemical Drift Timeline</span>
+          <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            Requires ≥2 historical test logs
           </span>
         </div>
-        <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '0.85rem' }}>
+        <div style={{ height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
           Log additional test kit entries to activate rate-of-change trajectory tracking.
         </div>
       </div>
@@ -42,19 +42,32 @@ export default function ParameterTimeline({ current, history = [] }) {
     .map((p, idx) => `${getX(idx)},${getY(p.alkalinity_dkh)}`)
     .join(' ');
 
+  // Area path for subtle gradient under the trajectory
+  const firstX = getX(0);
+  const lastX = getX(allPoints.length - 1);
+  const baseY = padding.top + chartH;
+  const areaPath = `M ${firstX},${baseY} L ${pointsString} L ${lastX},${baseY} Z`;
+
   return (
-    <div className="card" id="parameter-timeline" style={{ padding: '1.25rem' }}>
-      <div className="card-header">
-        <span className="card-title">SYNCHRONIZED CHEMICAL DRIFT TIMELINE (ALKALINITY / MG BUFFER)</span>
-        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', fontFamily: 'JetBrains Mono' }}>
-          <span style={{ color: '#38bdf8' }}>— Alkalinity (dKH)</span>
-          <span style={{ color: '#10b981' }}>-- Safe Zone (7.8 - 9.0)</span>
+    <div className="timeline-card" id="parameter-timeline">
+      <div className="timeline-header">
+        <span className="timeline-title">Synchronized Chemical Drift Timeline (Alkalinity / Buffer)</span>
+        <div className="timeline-legend">
+          <span style={{ color: '#38bdf8' }}>— Carbonate (dKH)</span>
+          <span style={{ color: '#10b981' }}>-- Safe Window (7.8 – 9.0)</span>
         </div>
       </div>
 
       <div style={{ width: '100%', overflowX: 'auto' }}>
         <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
-          {/* Safe Band Background */}
+          <defs>
+            <linearGradient id="timelineAreaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          {/* Safe Band Envelope */}
           {minAlk <= 9.0 && maxAlk >= 7.8 && (
             <rect
               x={padding.left}
@@ -62,31 +75,34 @@ export default function ParameterTimeline({ current, history = [] }) {
               width={chartW}
               height={Math.max(getY(Math.max(minAlk, 7.8)) - getY(Math.min(maxAlk, 9.0)), 0)}
               fill="#10b981"
-              opacity="0.08"
+              opacity="0.06"
             />
           )}
 
-          {/* Grid lines */}
-          <line x1={padding.left} y1={padding.top} x2={width - padding.right} y2={padding.top} stroke="#1e2c47" strokeWidth="1" />
-          <line x1={padding.left} y1={padding.top + chartH / 2} x2={width - padding.right} y2={padding.top + chartH / 2} stroke="#1e2c47" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1={padding.left} y1={padding.top + chartH} x2={width - padding.right} y2={padding.top + chartH} stroke="#1e2c47" strokeWidth="1" />
+          {/* Subtle Grid lines */}
+          <line x1={padding.left} y1={padding.top} x2={width - padding.right} y2={padding.top} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+          <line x1={padding.left} y1={padding.top + chartH / 2} x2={width - padding.right} y2={padding.top + chartH / 2} stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1={padding.left} y1={padding.top + chartH} x2={width - padding.right} y2={padding.top + chartH} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
 
-          {/* Y Axis Labels */}
-          <text x={padding.left - 8} y={padding.top + 4} fill="#64748b" fontSize="9" fontFamily="JetBrains Mono" textAnchor="end">
+          {/* Y Axis Numeric Labels */}
+          <text x={padding.left - 8} y={padding.top + 4} fill="#64748b" fontSize="9" fontFamily="var(--font-mono)" textAnchor="end">
             {maxAlk.toFixed(1)}
           </text>
-          <text x={padding.left - 8} y={padding.top + chartH / 2 + 3} fill="#64748b" fontSize="9" fontFamily="JetBrains Mono" textAnchor="end">
+          <text x={padding.left - 8} y={padding.top + chartH / 2 + 3} fill="#64748b" fontSize="9" fontFamily="var(--font-mono)" textAnchor="end">
             {((maxAlk + minAlk) / 2).toFixed(1)}
           </text>
-          <text x={padding.left - 8} y={padding.top + chartH} fill="#64748b" fontSize="9" fontFamily="JetBrains Mono" textAnchor="end">
+          <text x={padding.left - 8} y={padding.top + chartH} fill="#64748b" fontSize="9" fontFamily="var(--font-mono)" textAnchor="end">
             {minAlk.toFixed(1)}
           </text>
 
-          {/* Alkalinity Trajectory Line */}
+          {/* Shaded Area under Curve */}
+          <path d={areaPath} fill="url(#timelineAreaGrad)" />
+
+          {/* Alkalinity Trajectory Stroke */}
           <polyline
             fill="none"
             stroke="#38bdf8"
-            strokeWidth="2.5"
+            strokeWidth="2"
             points={pointsString}
           />
 
@@ -98,12 +114,12 @@ export default function ParameterTimeline({ current, history = [] }) {
 
             return (
               <g key={idx}>
-                <circle cx={cx} cy={cy} r="4.5" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
-                <text x={cx} y={padding.top + chartH + 18} fill="#64748b" fontSize="9" fontFamily="JetBrains Mono" textAnchor="middle">
+                <circle cx={cx} cy={cy} r="4" fill="#07090e" stroke="#38bdf8" strokeWidth="2" />
+                <text x={cx} y={padding.top + chartH + 18} fill="#64748b" fontSize="9" fontFamily="var(--font-mono)" textAnchor="middle">
                   {dateLabel}
                 </text>
-                <text x={cx} y={cy - 8} fill="#f8fafc" fontSize="9" fontFamily="JetBrains Mono" textAnchor="middle" fontWeight="bold">
-                  {p.alkalinity_dkh.toFixed(1)}
+                <text x={cx} y={cy - 8} fill="#f8fafc" fontSize="10" fontFamily="var(--font-mono)" textAnchor="middle" fontWeight="600">
+                  {p.alkalinity_dkh.toFixed(2)}
                 </text>
               </g>
             );

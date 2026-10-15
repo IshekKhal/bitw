@@ -343,134 +343,173 @@ export default function App() {
         hardwareStatus={hardwareStatus}
       />
 
-      {/* Engine Status & Latency Ribbon */}
+      {/* Sub-Header Engine Status Ribbon */}
       <div className="engine-status-bar" id="engine-status-ribbon">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
           <Cpu size={14} color="#38bdf8" />
           <span>INFERENCE ENGINE:</span>
-          <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+          <span className="active-engine">
             {prediction?.engine_used || 'Prior Labs TabPFN-3.5 Foundation Model'}
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           <span>MODEL CONFIDENCE: {((risk.confidence_score || 0.92) * 100).toFixed(0)}%</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
             {isOnline ? (
               <>
-                <Wifi size={13} color="#10b981" />
-                <span style={{ color: '#10b981' }}>CLOUD CONNECTED</span>
+                <span className="live-pulse-dot" />
+                <span style={{ color: '#10b981', fontWeight: 600 }}>TABPFN CLOUD LINK ACTIVE</span>
               </>
             ) : (
               <>
                 <WifiOff size={13} color="#f59e0b" />
-                <span style={{ color: '#f59e0b' }}>LOCAL MARINE GUARDRAILS (OFFLINE)</span>
+                <span style={{ color: '#f59e0b', fontWeight: 600 }}>LOCAL GUARDRAILS (OFFLINE)</span>
               </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Primary Threat Banner (At-A-Glance Verdict) */}
-      <div className={`card threat-main-card ${getRiskBorderClass()}`} style={{ padding: '1.25rem 1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-              <div className={`status-badge ${getStatusBadgeClass()}`}>
-                <span className="status-dot"></span>
-                <span>{risk.risk_level.replace('_', ' ')}</span>
-              </div>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                48-HOUR BIOLOGICAL THREAT HORIZON
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginTop: '0.35rem' }}>
-              <div
-                className="threat-score-value"
-                style={{
-                  color:
-                    risk.risk_level === 'IMMINENT_COLLAPSE'
-                      ? 'var(--color-collapse)'
-                      : risk.risk_level === 'COUPLING_DRIFT'
-                      ? 'var(--color-drift)'
-                      : 'var(--color-stable)'
-                }}
-              >
-                {(risk.crash_probability_48h * 100).toFixed(0)}%
-              </div>
-              <div>
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
-                  {risk.risk_level === 'IMMINENT_COLLAPSE'
-                    ? 'Catastrophic Chemical Collapse Predicted'
+      {/* Hero 48h Biological Threat Horizon (Architectural Mission Panel) */}
+      <div className={`hero-horizon-panel ${getRiskBorderClass()}`} id="hero-threat-horizon">
+        {/* Left Gauge Column */}
+        <div className="threat-gauge-col">
+          <div className="threat-meta-label">48H Threat Horizon</div>
+          <div className="threat-score-row">
+            <div
+              className="threat-score-number"
+              style={{
+                color:
+                  risk.risk_level === 'IMMINENT_COLLAPSE'
+                    ? 'var(--status-collapse)'
                     : risk.risk_level === 'COUPLING_DRIFT'
-                    ? 'Elevated Ionic Coupling Drift Detected'
-                    : 'System Equilibrium Stable & Balanced'}
-                </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                  {risk.risk_level === 'IMMINENT_COLLAPSE'
-                    ? 'Non-linear calcium carbonate precipitation or alkalinity shock will trigger coral tissue sloughing within 48h.'
-                    : 'Active calcification is safe. Biological buffer remains intact.'}
-                </p>
-              </div>
+                    ? 'var(--status-drift)'
+                    : 'var(--status-stable)'
+              }}
+            >
+              {(risk.crash_probability_48h * 100).toFixed(0)}%
+            </div>
+            <div
+              className="threat-score-label"
+              style={{
+                color:
+                  risk.risk_level === 'IMMINENT_COLLAPSE'
+                    ? 'var(--status-collapse)'
+                    : risk.risk_level === 'COUPLING_DRIFT'
+                    ? 'var(--status-drift)'
+                    : 'var(--status-stable)'
+              }}
+            >
+              {risk.risk_level === 'IMMINENT_COLLAPSE'
+                ? 'High Risk'
+                : risk.risk_level === 'COUPLING_DRIFT'
+                ? 'Drift Alert'
+                : 'Optimal'}
             </div>
           </div>
 
-          <button className="btn btn-secondary" onClick={() => setIsLogModalOpen(true)}>
-            <span>+ Enter New Test Kit Entry</span>
-          </button>
+          <div className="threat-micro-bar">
+            <div
+              className="threat-micro-bar-fill"
+              style={{
+                width: `${Math.max(6, risk.crash_probability_48h * 100)}%`,
+                background:
+                  risk.risk_level === 'IMMINENT_COLLAPSE'
+                    ? 'var(--status-collapse)'
+                    : risk.risk_level === 'COUPLING_DRIFT'
+                    ? 'var(--status-drift)'
+                    : 'var(--status-stable)'
+              }}
+            />
+          </div>
         </div>
 
-        {/* Primary Driver */}
-        <div className="driver-box">
-          <div className="driver-title">
-            <AlertTriangle size={13} color="#f59e0b" />
-            <span>Primary Vulnerability Driver &amp; Physical Mechanism</span>
+        {/* Middle Diagnosis Column */}
+        <div className="threat-diagnosis-col">
+          <div className="diagnosis-headline">
+            <span
+              className={`status-chip ${
+                risk.risk_level === 'IMMINENT_COLLAPSE'
+                  ? 'collapse'
+                  : risk.risk_level === 'COUPLING_DRIFT'
+                  ? 'drift'
+                  : 'stable'
+              }`}
+            >
+              {risk.risk_level.replace('_', ' ')}
+            </span>
+            <span>
+              {risk.risk_level === 'IMMINENT_COLLAPSE'
+                ? 'Catastrophic Chemical Collapse Predicted'
+                : risk.risk_level === 'COUPLING_DRIFT'
+                ? 'Elevated Ionic Coupling Drift Detected'
+                : 'System Equilibrium Stable & Balanced'}
+            </span>
           </div>
-          <p className="driver-text">{risk.primary_driver}</p>
-          {risk.secondary_driver && (
-            <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-              {risk.secondary_driver}
-            </p>
-          )}
+
+          <div className="diagnosis-driver-box">
+            <div className="driver-title-row">
+              <AlertTriangle size={13} color="#f59e0b" />
+              <span>Primary Vulnerability Driver &amp; Physical Mechanism</span>
+            </div>
+            <p className="driver-text">{risk.primary_driver}</p>
+            {risk.secondary_driver && (
+              <p className="driver-secondary">{risk.secondary_driver}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Right Action Column */}
+        <div className="threat-action-col">
+          <button
+            className="btn-control"
+            onClick={() => setIsLogModalOpen(true)}
+            style={{ background: 'var(--bg-card)' }}
+          >
+            <span>+ Enter Test Reading</span>
+          </button>
         </div>
       </div>
 
-      {/* Navigation Tab Bar (Clean Startup-Grade UX) */}
-      <nav className="tab-bar" aria-label="Dashboard Views">
+      {/* Progressive Disclosure Tab Rail (Architectural Segmented Control) */}
+      <nav className="tab-rail" aria-label="Dashboard Views">
         <button
-          className={`tab-btn ${activeTab === 'telemetry' ? 'tab-btn-active' : ''}`}
+          className={`tab-pill ${activeTab === 'telemetry' ? 'active' : ''}`}
           onClick={() => setActiveTab('telemetry')}
         >
-          <Sliders size={15} />
-          <span>Telemetry &amp; Trends</span>
+          <span className="tab-index">01</span>
+          <Sliders size={14} />
+          <span>Telemetry &amp; Drift Velocity</span>
         </button>
 
         <button
-          className={`tab-btn ${activeTab === 'radar' ? 'tab-btn-active' : ''}`}
+          className={`tab-pill ${activeTab === 'radar' ? 'active' : ''}`}
           onClick={() => setActiveTab('radar')}
         >
-          <Compass size={15} />
-          <span>48h Biological Radar &amp; Coupled Matrix</span>
+          <span className="tab-index">02</span>
+          <Compass size={14} />
+          <span>Bio-Radar &amp; Coupled Matrix</span>
         </button>
 
         <button
-          className={`tab-btn ${activeTab === 'dosing' ? 'tab-btn-active' : ''}`}
+          className={`tab-pill ${activeTab === 'dosing' ? 'active' : ''}`}
           onClick={() => setActiveTab('dosing')}
         >
-          <FileText size={15} />
+          <span className="tab-index">03</span>
+          <FileText size={14} />
           <span>Safe Dosing Protocol</span>
-          {risk.risk_level !== 'STABLE' && (
-            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#f59e0b', marginLeft: '2px' }} />
-          )}
+          {risk.risk_level !== 'STABLE' && <span className="tab-indicator-dot" />}
         </button>
 
         <button
-          className={`tab-btn ${activeTab === 'history' ? 'tab-btn-active' : ''}`}
+          className={`tab-pill ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
         >
-          <History size={15} />
-          <span>Test History Ledger ({history.length})</span>
+          <span className="tab-index">04</span>
+          <History size={14} />
+          <span>Test History Ledger</span>
+          <span className="tab-count">{history.length}</span>
         </button>
       </nav>
 
@@ -495,12 +534,12 @@ export default function App() {
 
       {/* TAB 2: Radar & Coupled Matrix */}
       {activeTab === 'radar' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '1.25rem' }}>
-          <div className="card">
-            <div className="card-header">
-              <span className="card-title">
-                <Compass size={16} />
-                <span>48-Hour Biological Radar</span>
+        <div className="radar-view-container">
+          <div className="timeline-card">
+            <div className="timeline-header">
+              <span className="timeline-title" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Compass size={14} />
+                <span>48-Hour Biological Phase Radar</span>
               </span>
               <Tooltip
                 title="Biological Radar Sonar"
@@ -514,15 +553,15 @@ export default function App() {
             />
           </div>
 
-          <div className="card">
-            <div className="card-header">
-              <span className="card-title">
-                <Shield size={16} />
+          <div className="timeline-card">
+            <div className="timeline-header">
+              <span className="timeline-title" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Shield size={14} />
                 <span>Coupled Chemical Matrix (Cross-Parameter Equilibrium)</span>
               </span>
             </div>
 
-            <div className="coupled-matrix-list">
+            <div className="coupled-list">
               <div className="coupled-item">
                 <div>
                   <div className="coupled-label-row">
@@ -533,12 +572,12 @@ export default function App() {
                       why="Magnesium is your chemical bodyguard. If it falls below 2.85, calcium and alkalinity bind into chalk dust and crash your tank."
                     />
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>{indicators.mg_ca_status}</div>
+                  <div style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>{indicators.mg_ca_status}</div>
                 </div>
                 <span
                   className="coupled-value"
                   style={{
-                    color: indicators.mg_ca_ratio < 2.85 ? 'var(--color-collapse)' : 'var(--text-primary)'
+                    color: indicators.mg_ca_ratio < 2.85 ? 'var(--status-collapse)' : 'var(--text-primary)'
                   }}
                 >
                   {indicators.mg_ca_ratio.toFixed(2)} : 1
@@ -555,8 +594,8 @@ export default function App() {
                       why="Above 1.0 means coral skeletons can grow. Below 1.0 means the water is acidic and literally dissolves the coral skeletons back into water."
                     />
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                    {indicators.aragonite_saturation_proxy < 1.0 ? 'Skeletal Dissolution' : 'Supersaturated'}
+                  <div style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                    {indicators.aragonite_saturation_proxy < 1.0 ? 'Skeletal Dissolution' : 'Supersaturated Calcification'}
                   </div>
                 </div>
                 <span className="coupled-value">{indicators.aragonite_saturation_proxy.toFixed(2)}</span>
@@ -572,8 +611,8 @@ export default function App() {
                       why="If phosphate drops to zero while alkalinity is high, coral polyps starve and burn their growing tips."
                     />
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                    {indicators.nutrient_starvation_flag ? 'Burnt Tip Hazard' : 'Redfield Buffer'}
+                  <div style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                    {indicators.nutrient_starvation_flag ? 'Burnt Tip Hazard' : 'Balanced Buffer'}
                   </div>
                 </div>
                 <span className="coupled-value">{indicators.redfield_nutrient_ratio.toFixed(1)} : 1</span>
@@ -589,7 +628,7 @@ export default function App() {
                       why="All milliliter liquid chemical dosages are calculated stoichiometrically against this volume."
                     />
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Dosing Calculation Basis</div>
+                  <div style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Stoichiometric Basis</div>
                 </div>
                 <span className="coupled-value">{tankProfile.net_volume_liters} L</span>
               </div>

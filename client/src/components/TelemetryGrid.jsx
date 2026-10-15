@@ -140,7 +140,7 @@ export default function TelemetryGrid({ current, indicators, systemType = 'sps_d
   ];
 
   return (
-    <div className="telemetry-grid" id="telemetry-grid">
+    <div className="telemetry-instrument-grid" id="telemetry-grid">
       {params.map((p) => {
         const velFormatted =
           p.velocity !== null && p.velocity !== undefined
@@ -153,42 +153,41 @@ export default function TelemetryGrid({ current, indicators, systemType = 'sps_d
             id={p.id}
             className="telemetry-card"
             style={{
-              borderColor: p.isWarning ? 'var(--color-collapse-border)' : 'var(--border-subtle)'
+              borderColor: p.isWarning ? 'var(--status-collapse-border)' : 'var(--border-hairline)'
             }}
           >
-            <div className="telemetry-card-top">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span className="parameter-name">{p.name}</span>
+            <div className="telemetry-header">
+              <div className="telemetry-name-row">
+                <span className="telemetry-name">{p.name}</span>
                 <Tooltip
                   title={p.tooltip.title}
                   text={p.tooltip.text}
                   whyItMatters={p.tooltip.why}
                 />
               </div>
-              <span className="parameter-formula">{p.formula}</span>
+              <span style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                {p.formula}
+              </span>
             </div>
 
-            <div className="parameter-reading-row">
-              <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                <span className="parameter-value">{p.value}</span>
-                <span className="parameter-unit">{p.unit}</span>
-              </div>
+            <div className="telemetry-value-row">
+              <span className="telemetry-number">{p.value}</span>
+              <span className="telemetry-unit">{p.unit}</span>
 
               {velFormatted && (
                 <span
-                  className={`velocity-badge ${
-                    Math.abs(p.velocity) >= 0.40 ? 'velocity-alert' : 'velocity-neutral'
-                  }`}
-                  title="24-hour rate of change calculated from previous tests"
+                  className={`velocity-badge ${p.isWarning ? 'warning' : 'safe'}`}
+                  style={{ marginLeft: 'auto' }}
+                  title="24-hour rate of change calculated from historical test logs"
                 >
                   {velFormatted}
                 </span>
               )}
             </div>
 
-            <div className="telemetry-target-row">
-              <span>Target: {p.target}</span>
-              <span title="Biological maximum safe adjustment rate per day">{p.clamp}</span>
+            <div className="telemetry-footer">
+              <span className="telemetry-target">Target: {p.target}</span>
+              <span title="Biological maximum safe daily speed">{p.clamp}</span>
             </div>
           </div>
         );
