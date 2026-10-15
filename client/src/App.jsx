@@ -667,7 +667,9 @@ export default function App() {
                   </div>
                   <div style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
                     {(() => {
-                      const ratio = currentReading.alkalinity_dkh > 0 ? (currentReading.calcium_ppm / currentReading.alkalinity_dkh) : 50;
+                      const alk = currentTest?.alkalinity_dkh || 8.4;
+                      const ca = currentTest?.calcium_ppm || 420;
+                      const ratio = alk > 0 ? ca / alk : 50;
                       if (ratio < 42) return 'Carbonate Excess Skew';
                       if (ratio > 58) return 'Alkalinity Depleted Skew';
                       return 'Stoichiometric Homeostasis';
@@ -675,7 +677,11 @@ export default function App() {
                   </div>
                 </div>
                 <span className="coupled-value">
-                  {(currentReading.alkalinity_dkh > 0 ? (currentReading.calcium_ppm / currentReading.alkalinity_dkh).toFixed(1) : '50.0')} : 1
+                  {(() => {
+                    const alk = currentTest?.alkalinity_dkh || 8.4;
+                    const ca = currentTest?.calcium_ppm || 420;
+                    return (alk > 0 ? (ca / alk).toFixed(1) : '50.0');
+                  })()} : 1
                 </span>
               </div>
             </div>
