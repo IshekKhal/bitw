@@ -140,6 +140,14 @@ export default function App() {
 
   // Handle Preset Archetype Selection
   const handleSelectPreset = (presetId) => {
+    if (presetId === 'preset_fresh_start') {
+      clearAllSavedData();
+      setTankProfile(DEFAULT_TANK_PROFILE);
+      setCurrentTest(DEFAULT_CURRENT_TEST);
+      setHistory([]);
+      return;
+    }
+
     const selected = presets.find((p) => p.id === presetId);
     if (selected && selected.current_test) {
       setTankProfile(selected.tank_profile);

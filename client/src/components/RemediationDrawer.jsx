@@ -139,7 +139,7 @@ export default function RemediationDrawer({ plan, riskAssessment, tankVolume }) 
                   )}
                 </td>
                 <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                  {step.rationale}
+                  {step.reasoning || step.rationale}
                 </td>
               </tr>
             ))}
@@ -193,7 +193,7 @@ export default function RemediationDrawer({ plan, riskAssessment, tankVolume }) 
             )}
 
             <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.4, marginTop: '0.4rem' }}>
-              {step.rationale}
+              {step.reasoning || step.rationale}
             </div>
           </div>
         ))}

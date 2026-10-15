@@ -14,6 +14,7 @@ export default function Header({
   hardwareStatus = 'idle'
 }) {
   const [showTankMenu, setShowTankMenu] = useState(false);
+  const [selectedPresetVal, setSelectedPresetVal] = useState('');
   const tankMenuRef = useRef(null);
 
   // Close tank menu on click outside
@@ -30,6 +31,7 @@ export default function Header({
   const getCoralLoadLabel = (type) => {
     switch (type) {
       case 'heavy_sps':
+      case 'sps_dominant':
         return 'SPS Acropora';
       case 'mixed_reef':
         return 'Mixed Reef';
@@ -59,7 +61,7 @@ export default function Header({
           >
             <Waves size={13} className="text-cyan" style={{ flexShrink: 0 }} />
             <span className="tank-name-label">
-              {tankProfile.net_volume_liters}L {getCoralLoadLabel(tankProfile.coral_load)}
+              {tankProfile.net_volume_liters}L {getCoralLoadLabel(tankProfile.system_type || tankProfile.coral_load)}
             </span>
             <ChevronDown size={12} className={`chevron-icon ${showTankMenu ? 'rotated' : ''}`} />
           </button>
@@ -76,15 +78,16 @@ export default function Header({
                   <select
                     id="popover-coral-load"
                     className="select-param"
-                    value={tankProfile.coral_load || 'heavy_sps'}
+                    value={tankProfile.system_type || tankProfile.coral_load || 'sps_dominant'}
                     onChange={(e) =>
                       onTankProfileChange({
                         ...tankProfile,
+                        system_type: e.target.value,
                         coral_load: e.target.value
                       })
                     }
                   >
-                    <option value="heavy_sps">SPS Dominant (Acropora)</option>
+                    <option value="sps_dominant">SPS Dominant (Acropora)</option>
                     <option value="mixed_reef">Mixed Reef (LPS + SPS)</option>
                     <option value="lps_softie">LPS &amp; Soft Corals</option>
                     <option value="nano_reef">Nano Reef (&lt;40 Gal)</option>
@@ -124,19 +127,28 @@ export default function Header({
             id="preset-selector"
             className="select-scenario-compact"
             aria-label="Load Simulation Scenario"
+            value={selectedPresetVal}
             onChange={(e) => {
-              if (e.target.value) onSelectPreset(e.target.value);
+              const val = e.target.value;
+              if (val) {
+                onSelectPreset(val);
+                setSelectedPresetVal('');
+              }
             }}
-            defaultValue=""
           >
             <option value="" disabled>
-              🧪 Scenarios...
+              🧪 Scenarios / Tank...
             </option>
-            {presets.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
+            <option value="preset_fresh_start" style={{ fontWeight: 600, color: '#38bdf8' }}>
+              ✨ My Real Tank (Start Fresh)
+            </option>
+            <optgroup label="Disaster Scenarios">
+              {presets.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 

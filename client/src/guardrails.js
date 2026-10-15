@@ -74,23 +74,50 @@ export function evaluateClientGuardrails(current, history = [], tankProfile = {}
   const ionicProduct = Number(((current.calcium_ppm * current.alkalinity_dkh * hTerm) / (420.0 * 8.5)).toFixed(2));
   const aragoniteProxy = Number(((current.calcium_ppm / 420.0) * (current.alkalinity_dkh / 8.5) * hTerm).toFixed(2));
   const redfieldRatio = Number((current.nitrate_ppm / ((Math.max(current.phosphate_ppm, 0.001) * 16.0) + 1e-4)).toFixed(1));
-  const isStarved = (current.phosphate_ppm < 0.01 && current.alkalinity_dkh > 8.5) ? 1 : 0;
+  // Ecosystem-specific biological sensitivity limits
+  let alkShockLimit = 0.60;
+  let alkDriftLimit = 0.35;
+  let alkLabel = 'SPS Acropora Vulnerability: Acropora tissue cannot tolerate rapid carbonate shifts';
+  let po4StarveAlkThresh = 8.20;
+  let po4StarveMin = 0.015;
+
+  if (systemType === 'lps_softie') {
+    alkShockLimit = 1.05;
+    alkDriftLimit = 0.65;
+    alkLabel = 'LPS & Softie Resilience: Fleshy corals tolerate moderate shifts';
+    po4StarveAlkThresh = 9.50;
+    po4StarveMin = 0.005;
+  } else if (systemType === 'nano_reef') {
+    alkShockLimit = 0.70;
+    alkDriftLimit = 0.40;
+    alkLabel = 'Nano Reef Hazard: Low water volume amplifies chemical oscillations';
+    po4StarveAlkThresh = 8.40;
+    po4StarveMin = 0.010;
+  } else if (systemType === 'mixed_reef') {
+    alkShockLimit = 0.80;
+    alkDriftLimit = 0.45;
+    alkLabel = 'Mixed Reef Equilibrium';
+    po4StarveAlkThresh = 8.50;
+    po4StarveMin = 0.010;
+  }
+
+  const isStarved = (systemType !== 'lps_softie' && current.phosphate_ppm < po4StarveMin && current.alkalinity_dkh > po4StarveAlkThresh) ? 1 : 0;
 
   // Deterministic checks
-  let crashProb = 0.06;
+  let crashProb = 0.05;
   let riskLevel = 'STABLE';
-  let primaryDriver = 'All 8 Parameters in Safe Range: Reef chemistry is balanced and stable. No rapid chemical shifts detected.';
+  let primaryDriver = `All 8 Parameters in Safe Range: Reef chemistry is balanced and stable for ${systemType.replace('_', ' ')}.`;
   let secondaryDriver = null;
 
   if (mgCaRatio < 2.85 || (current.magnesium_ppm < 1200 && current.alkalinity_dkh > 8.0)) {
     crashProb = mgCaRatio < 2.70 ? 0.88 : 0.79;
     riskLevel = 'IMMINENT_COLLAPSE';
     primaryDriver = `Magnesium Shield Depleted: Ratio is ${mgCaRatio} (target is ~3.20). Calcium and alkalinity will bind and precipitate out like snow, starving corals.`;
-  } else if (Math.abs(alkVelocity) >= 0.80) {
+  } else if (Math.abs(alkVelocity) >= alkShockLimit) {
     crashProb = 0.92;
     riskLevel = 'IMMINENT_COLLAPSE';
     const direction = alkVelocity < 0 ? 'dropped' : 'jumped';
-    primaryDriver = `Alkalinity Shock: Alkalinity ${direction} ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH in 24h. Corals cannot adapt to sudden swings—tissue will peel off (RTN) within 48h unless stabilized.`;
+    primaryDriver = `Alkalinity Shock: Alkalinity ${direction} ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH in 24h. ${alkLabel}—tissue will peel off (RTN) within 48h unless stabilized.`;
   } else if (current.alkalinity_dkh < 6.5) {
     crashProb = 0.85;
     riskLevel = 'IMMINENT_COLLAPSE';
@@ -98,15 +125,15 @@ export function evaluateClientGuardrails(current, history = [], tankProfile = {}
   } else if (isStarved) {
     crashProb = 0.68;
     riskLevel = 'COUPLING_DRIFT';
-    primaryDriver = `Phosphate Starvation & Burnt Tips: Zero phosphate (${current.phosphate_ppm} ppm) at ${current.alkalinity_dkh} dKH. Corals starve under intense lights and burn tips within 48h.`;
+    primaryDriver = `Phosphate Starvation & Burnt Tips: Zero phosphate (${current.phosphate_ppm} ppm) at elevated alkalinity (${current.alkalinity_dkh} dKH). Corals starve under intense lights and burn tips within 48h.`;
   } else if (mgCaRatio < 3.05) {
-    crashProb = 0.32;
+    crashProb = 0.28;
     riskLevel = 'COUPLING_DRIFT';
     primaryDriver = `Mild Magnesium Drift: Ratio ${mgCaRatio} is drifting near the 2.85 precipitation boundary.`;
-  } else if (Math.abs(alkVelocity) >= 0.30) {
-    crashProb = 0.25;
+  } else if (Math.abs(alkVelocity) >= alkDriftLimit) {
+    crashProb = systemType === 'sps_dominant' ? 0.55 : 0.35;
     riskLevel = 'COUPLING_DRIFT';
-    primaryDriver = `Moderate Alkalinity Drift: ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH/24h. Safe daily limit is ±0.5 dKH.`;
+    primaryDriver = `Moderate Alkalinity Drift: ${alkVelocity > 0 ? '+' : ''}${alkVelocity} dKH/24h. Safe limit for ${systemType.replace('_', ' ')} is ±${alkDriftLimit} dKH.`;
   }
 
   // Generate remediation plan
