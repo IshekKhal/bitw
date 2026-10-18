@@ -9,3 +9,10 @@ client/dist/
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Internal documentation and notes (only root README.md is published)
+MEMORY.md
+PROGRESS.md
+SUBMISSION.md
+docs/
+client/README.md
