@@ -163,8 +163,8 @@ The engine modulates thresholds based on coral bioload:
 
 ### 1. Clone & Configure Backend
 ```bash
-git clone <repo-url>
-cd week2
+git clone https://github.com/IshekKhal/bitw.git
+cd bitw
 
 # Create virtual environment
 python -m venv venv
