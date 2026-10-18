@@ -23,7 +23,6 @@ services:
   - type: web
     name: before-it-turns-white-ui
     runtime: static
-    plan: free
     buildCommand: "npm --prefix client install && npm --prefix client run build"
     staticPublishPath: "./client/dist"
     routes:
