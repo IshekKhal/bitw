@@ -11,12 +11,6 @@ services:
         value: 3.11.9
       - key: TABPFN_TOKEN
         sync: false
-      - key: PRIOR_LABS_API_KEY
-        sync: false
-      - key: DODO_PAYMENTS_API_KEY
-        sync: false
-      - key: DODO_PAYMENTS_WEBHOOK_SECRET
-        sync: false
       - key: ENVIRONMENT
         value: production
 
