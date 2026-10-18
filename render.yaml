@@ -3,7 +3,7 @@ services:
     name: before-it-turns-white-api
     runtime: python
     region: oregon
-    plan: starter
+    plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
     envVars:
@@ -23,10 +23,13 @@ services:
   - type: web
     name: before-it-turns-white-ui
     runtime: static
-    region: oregon
     plan: free
     buildCommand: "npm --prefix client install && npm --prefix client run build"
     staticPublishPath: "./client/dist"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
         value: "https://before-it-turns-white-api.onrender.com"

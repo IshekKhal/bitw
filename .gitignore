@@ -10,7 +10,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-# Internal documentation and notes (only root README.md is published)
+# Internal documentation and notes 
 MEMORY.md
 PROGRESS.md
 SUBMISSION.md
